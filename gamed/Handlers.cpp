@@ -327,7 +327,7 @@ bool PacketHandler::handleChatBoxMessage(HANDLE_ARGS) {
     ChatMessage *message = reinterpret_cast<ChatMessage *>(packet->data);
     //Lets do commands
     if(message->msg == '.') {
-        const char *cmd[] = { ".set", ".gold", ".speed", ".health", ".xp", ".ap", ".ad", ".mana", ".model", ".help" };
+        const char *cmd[] = { ".set", ".gold", ".speed", ".health", ".xp", ".ap", ".ad", ".mana", ".model", ".help", ".spawn" };
         //Set field
         if(strncmp(message->getMessage(), cmd[0], strlen(cmd[0])) == 0) {
             uint32 blockNo = atoi(&message->getMessage()[strlen(cmd[0]) + 1]);
@@ -342,7 +342,7 @@ bool PacketHandler::handleChatBoxMessage(HANDLE_ARGS) {
             stats->destroy();
             return true;
         }
-        // Set Gold
+        /* Set Gold - currently disabled, the game freezes whenever this is ran
         if(strncmp(message->getMessage(), cmd[1], strlen(cmd[1])) == 0) {
             float gold = (float)atoi(&message->getMessage()[strlen(cmd[1]) + 1]);
             CharacterStats *stats = CharacterStats::create(FM1_Gold, 0, 0, 0, 0);
@@ -352,6 +352,26 @@ bool PacketHandler::handleChatBoxMessage(HANDLE_ARGS) {
             sendPacket(peer, reinterpret_cast<uint8 *>(stats), stats->getSize(), CHL_LOW_PRIORITY, 2);
             stats->destroy();
             return true;
+        }*/
+        if(strncmp(message->getMessage(), cmd[10], strlen(cmd[10])) == 0) { // spawning a new prop
+            MovementReq *request = reinterpret_cast<MovementReq*>(packet->data);
+            std::vector<MovementVector> vMoves;
+            MovementVector lastCoord;
+            float lastCoordx = 500;
+            float lastCoordy = 600;
+            char* type = (char*)(&message->getMessage()[strlen(cmd[10]) + 1]);
+            int x = (int)(&message->getMessage()[strlen(cmd[0]) + 2]);
+            int y = (int)(&message->getMessage()[strlen(cmd[0]) + 3]);
+            Logging->writeLine("Spawn %s", type);
+            Logging->writeLine("In x: %f", lastCoord.x);
+            Logging->writeLine("In y: %f\n", lastCoord.y);
+            LevelPropSpawn lpSpawn;
+            lpSpawn.SetProp(type, type);
+            lpSpawn.header.netId = 0;
+            lpSpawn.netId = GetNewNetID();
+            lpSpawn.x = lastCoordx;
+            lpSpawn.y = lastCoordy;
+            sendPacket(peer, reinterpret_cast<uint8 *>(&lpSpawn), sizeof(LevelPropSpawn), CHL_S2C);
         }
         /*
 

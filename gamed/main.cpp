@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SERVER_PORT 5119
 #define SERVER_KEY "17BLOhi6KZsTtldTsizvHg=="
 
-#define SERVER_VERSION "0.0.2"
+#define SERVER_VERSION "0.0.3"
 
 int main(int argc, char ** argv) 
 {
-	Logging->writeLine("IntWars %s\n",SERVER_VERSION);
+	Logging->writeLine("LoN Server %s\n",SERVER_VERSION);
 	NetworkListener *listener = new NetworkListener();
 	ENetAddress address;
 	address.host = SERVER_HOST;

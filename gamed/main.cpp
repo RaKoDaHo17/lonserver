@@ -20,19 +20,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Log.h"
 
 #define SERVER_HOST ENET_HOST_ANY 
-#define SERVER_PORT 5119
+#define SERVER_PORT_DEFAULT 5119
 #define SERVER_KEY "17BLOhi6KZsTtldTsizvHg=="
 
-#define SERVER_VERSION "0.0.3"
+#define SERVER_VERSION "0.0.4"
 
-int main(int argc, char ** argv) 
-{
+int main(int argc, char ** argv) {
 	Logging->writeLine("LoN Server %s\n",SERVER_VERSION);
 	NetworkListener *listener = new NetworkListener();
 	ENetAddress address;
 	address.host = SERVER_HOST;
-	address.port = SERVER_PORT;
-
+	if (argc > 1) {
+		enet_uint16 port = (int)argv[1]; // written like this to prevent overlooks
+		address.port = port;
+	} else {
+		address.port = SERVER_PORT_DEFAULT;
+	}
 	listener->initialize(&address, SERVER_KEY);
 	Logging->writeLine("Starting net loop\n");
 	listener->netLoop();

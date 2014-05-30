@@ -449,6 +449,7 @@ bool PacketHandler::handleChatBoxMessage(HANDLE_ARGS) {
             broadcastPacket(reinterpret_cast<uint8 *>(&modelPacket), sizeof(UpdateModel), CHL_S2C);
             return true;
         }
+
     }
     switch(message->type) {
         case CMT_ALL:
@@ -482,7 +483,13 @@ bool PacketHandler::handleBuyItem(HANDLE_ARGS) {
     BuyItemAns response;
     response.header.netId = request->header.netId;
     response.itemId = request->id;
-    response.slotId = slot++; //check for trinket ID and addapt slot
+    if (response.itemId == 3340 || response.itemId == 3341) { // warding totem, sweeping lens (trinkets)
+        response.slotId = 6;
+    } else if (response.itemId == 3342) { // scrying orb (trinket)
+        response.slotId = 6;
+    } else { // ordinary item, not a trinket
+        response.slotId = slot++;
+    }
     response.stack = 1;
     return broadcastPacket(reinterpret_cast<uint8 *>(&response), sizeof(response), CHL_S2C);
 }
